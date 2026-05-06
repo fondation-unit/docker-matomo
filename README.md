@@ -6,7 +6,7 @@ This setup provides a minimal, production-ready structure.
 
 ---
 
-# Environment Configuration
+## Environment Configuration
 
 Create a `.env` file:
 
@@ -17,7 +17,7 @@ MYSQL_USER=matomo
 MYSQL_PASSWORD=change_me
 ```
 
-# MariaDB Configuration
+## MariaDB Configuration
 
 The file `db/my.cnf` is mounted into:
 
@@ -27,7 +27,7 @@ The file `db/my.cnf` is mounted into:
 
 Do not add `!includedir` directives, since the base MariaDB container configuration already manages these.
 
-# Persistent data
+## Persistent data
 
 Two Docker volumes are created:
 
@@ -38,7 +38,7 @@ Two Docker volumes are created:
 
 These volumes ensure data survives container restarts.
 
-# Updating
+## Updating
 
 Pull the latest images:
 
@@ -49,3 +49,11 @@ docker compose up -d
 
 > [!IMPORTANT]
 > Do a database backup before upgrading.
+
+## Docker
+
+Purge builder's cache:
+
+```bash
+sudo docker builder prune -a
+```

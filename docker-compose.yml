@@ -12,12 +12,16 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    networks:
+      - internal
 
   redis:
     image: redis:8.6.3-trixie
     restart: unless-stopped
     volumes:
       - redis:/data
+    networks:
+      - internal
 
   matomo:
     image: matomo:5.10.0-apache
@@ -34,10 +38,52 @@ services:
       MATOMO_DATABASE_USERNAME: ${MARIADB_USER}
       MATOMO_DATABASE_PASSWORD: ${MARIADB_PASSWORD}
       MATOMO_DATABASE_DBNAME: ${MARIADB_DATABASE}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.matomo.rule=Host(`${DOMAIN_NAME}`)"
+      - "traefik.http.routers.matomo.entrypoints=websecure"
+      - "traefik.http.routers.matomo.tls.certresolver=myresolver"
+      - "traefik.http.services.matomo.loadbalancer.server.port=80"
+      # Gzip compression
+      - "traefik.http.routers.matomo.middlewares=compress-matomo@docker"
+      - "traefik.http.middlewares.compress-matomo.compress=true"
     volumes:
       - matomo:/var/www/html
+    networks:
+      - internal
+      - web
+
+  traefik:
+    image: traefik:v3.6
+    restart: unless-stopped
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./traefik/acme.json:/letsencrypt/acme.json"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - web
 
 volumes:
   db:
   matomo:
   redis:
+
+networks:
+  internal:
+    driver: bridge
+  web:
+    driver: bridge

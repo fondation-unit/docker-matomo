@@ -1,0 +1,42 @@
+services:
+  db:
+    image: mariadb:lts-ubi9
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - db:/var/lib/mysql
+      - ./db/my.cnf:/etc/mysql/conf.d/matomo.cnf:ro
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:trixie
+    restart: unless-stopped
+    volumes:
+      - redis:/data
+
+  matomo:
+    image: matomo:5.10.0-apache
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "8080:80"
+    environment:
+      MATOMO_DATABASE_HOST: ${MARIADB_HOST}
+      MATOMO_DATABASE_USERNAME: ${MARIADB_USER}
+      MATOMO_DATABASE_PASSWORD: ${MARIADB_PASSWORD}
+      MATOMO_DATABASE_DBNAME: ${MARIADB_DATABASE}
+    volumes:
+      - matomo:/var/www/html
+
+volumes:
+  db:
+  matomo:

@@ -67,19 +67,21 @@ services:
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=web"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
-      # Resolver
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--api.insecure=true"
     ports:
       - "80:80"
       - "443:443"
+      - "8080:8080"
     volumes:
       - "./traefik/acme.json:/letsencrypt/acme.json"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -96,3 +98,4 @@ networks:
     driver: bridge
   web:
     driver: bridge
+    name: web

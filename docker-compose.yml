@@ -14,7 +14,7 @@ services:
       retries: 10
 
   redis:
-    image: redis:trixie
+    image: redis:8.6.3-trixie
     restart: unless-stopped
     volumes:
       - redis:/data

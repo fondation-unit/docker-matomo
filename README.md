@@ -58,3 +58,13 @@ Purge builder's cache:
 ```bash
 sudo docker builder prune -a
 ```
+
+## Systemd service
+
+```bash
+chmod +x infra/deploy-service.sh
+sudo ./infra/deploy-service.sh
+
+systemctl status docker-matomo
+ss -tlnp | grep 8983
+```

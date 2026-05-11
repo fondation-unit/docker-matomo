@@ -8,13 +8,14 @@ This setup provides a minimal, production-ready structure.
 
 ## Environment Configuration
 
-Create a `.env` file:
+Create a `.env` file from `.env-sample` and fill in the variables.
 
 ```
-MYSQL_ROOT_PASSWORD=change_me
-MYSQL_DATABASE=matomo
-MYSQL_USER=matomo
-MYSQL_PASSWORD=change_me
+MARIADB_HOST=db
+MARIADB_ROOT_PASSWORD=
+MARIADB_USER=
+MARIADB_PASSWORD=
+MARIADB_DATABASE=
 ```
 
 ## MariaDB Configuration

@@ -77,6 +77,7 @@ services:
     volumes:
       - matomo:/var/www/html
       - ./matomo/entrypoint.sh:/entrypoint.sh:ro
+      - ./matomo/rsyslog.conf:/etc/rsyslog.conf:ro
     entrypoint: /bin/bash
     command: /entrypoint.sh
     networks:

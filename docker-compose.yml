@@ -73,6 +73,7 @@ services:
       MATOMO_DATABASE_PASSWORD: ${MARIADB_PASSWORD}
       MATOMO_DATABASE_DBNAME: ${MARIADB_DATABASE}
       DOMAIN_NAME: ${DOMAIN_NAME}
+      ACME_EMAIL: ${ACME_EMAIL}
     volumes:
       - matomo:/var/www/html
       - ./matomo/entrypoint.sh:/entrypoint.sh:ro

@@ -62,7 +62,7 @@ services:
       - web
 
   matomo-cron:
-    image: matomo:5.10.0-apache
+    build: ./matomo
     restart: unless-stopped
     depends_on:
       db:
@@ -74,13 +74,9 @@ services:
       MATOMO_DATABASE_DBNAME: ${MARIADB_DATABASE}
     volumes:
       - matomo:/var/www/html
-    command: >
-      /bin/bash -c "
-      while true; do
-        php /var/www/html/console core:archive --url=https://${DOMAIN_NAME}
-        sleep 3600
-      done
-      "
+      - ./matomo/entrypoint.sh:/entrypoint.sh:ro
+    entrypoint: /bin/bash
+    command: /entrypoint.sh
     networks:
       - internal
 

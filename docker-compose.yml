@@ -62,7 +62,7 @@ services:
       - web
 
   matomo-cron:
-    build: ./matomo
+    image: matomo:5.10.0-apache
     restart: unless-stopped
     depends_on:
       db:
@@ -73,13 +73,13 @@ services:
       MATOMO_DATABASE_PASSWORD: ${MARIADB_PASSWORD}
       MATOMO_DATABASE_DBNAME: ${MARIADB_DATABASE}
       DOMAIN_NAME: ${DOMAIN_NAME}
-      ACME_EMAIL: ${ACME_EMAIL}
     volumes:
       - matomo:/var/www/html
-      - ./matomo/entrypoint.sh:/entrypoint.sh:ro
-      - ./matomo/rsyslog.conf:/etc/rsyslog.conf:ro
-    entrypoint: /bin/bash
-    command: /entrypoint.sh
+    command: >
+      bash -c "while true; do
+        php /var/www/html/console core:archive --url=https://${DOMAIN_NAME};
+        sleep ${ARCHIVE_INTERVAL};
+      done"
     networks:
       - internal
 

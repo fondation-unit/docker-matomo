@@ -61,6 +61,29 @@ services:
       - internal
       - web
 
+  matomo-cron:
+    image: matomo:5.10.0-apache
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      MATOMO_DATABASE_HOST: ${MARIADB_HOST}
+      MATOMO_DATABASE_USERNAME: ${MARIADB_USER}
+      MATOMO_DATABASE_PASSWORD: ${MARIADB_PASSWORD}
+      MATOMO_DATABASE_DBNAME: ${MARIADB_DATABASE}
+    volumes:
+      - matomo:/var/www/html
+    command: >
+      /bin/bash -c "
+      while true; do
+        php /var/www/html/console core:archive --url=https://${DOMAIN_NAME}
+        sleep 3600
+      done
+      "
+    networks:
+      - internal
+
   traefik:
     image: traefik:v3.6
     restart: unless-stopped

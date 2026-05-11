@@ -40,6 +40,8 @@ log.*
 nginx/log
 kompose
 
+traefik/logs
+
 !moodle/moodle_data/.keep
 !moodle/src/.keep
 

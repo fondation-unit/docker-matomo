@@ -99,6 +99,8 @@ services:
       - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
       - "--api.insecure=true"
+      - "--accesslog=true"
+      - "--accesslog.filepath=/var/log/traefik/access.log"
     ports:
       - "80:80"
       - "443:443"
@@ -106,6 +108,7 @@ services:
     volumes:
       - "./traefik/acme.json:/letsencrypt/acme.json"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik/logs:/var/log/traefik"
     networks:
       - web
 

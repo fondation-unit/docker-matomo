@@ -3,7 +3,7 @@ set -a
 source .env
 set +a
 
-envsubst < systemd/docker-matomo.service.template > /etc/systemd/system/docker-matomo.service
+envsubst < infra/systemd/docker-matomo.service.template > /etc/systemd/system/docker-matomo.service
 systemctl daemon-reload
-systemctl enable solr-tunnel
-systemctl restart solr-tunnel
+systemctl enable docker-matomo
+systemctl restart docker-matomo
